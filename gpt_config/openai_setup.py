@@ -7,13 +7,10 @@ def initialize_openai():
     try:
         OPENAI_API_KEY = st.secrets["openai"]["api_key"]
     except KeyError:
-        st.error("Please add your OpenAI API key to the Streamlit secrets.toml file.")
+        st.error("Please add your OpenAI API key to the Streamlit secrets.")
         st.stop()
     
-    # Configura la API Key y ajusta los headers para usar la versión v2 de la API
+    # Configura la API Key de OpenAI
     openai.api_key = OPENAI_API_KEY
-    openai.default_headers = {
-        "Authorization": f"Bearer {OPENAI_API_KEY}",
-        "OpenAI-Beta": "assistants=v2"
-    }
-    return openai.Client()
+    
+    return openai
