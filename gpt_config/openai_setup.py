@@ -1,3 +1,4 @@
+# gpt_config/openai_setup.py
 import openai
 import streamlit as st
 import logging
@@ -5,12 +6,16 @@ import logging
 # Configure logging
 logging.basicConfig(level=logging.INFO)
 
-# Retrieve and validate API key
-OPENAI_API_KEY = st.secrets.get("OPENAI_API_KEY", None)
-if not OPENAI_API_KEY:
-    st.error("Please add your OpenAI API key to the Streamlit secrets.toml file.")
-    st.stop()
+def initialize_openai():
+    """Inicializa OpenAI y obtiene la clave API de los secretos de Streamlit."""
+    OPENAI_API_KEY = st.secrets.get("openai", {}).get("api_key", None)
 
-# Assign OpenAI API Key
-openai.api_key = OPENAI_API_KEY
-client = openai.OpenAI(
+    if not OPENAI_API_KEY:
+        st.error("Please add your OpenAI API key to the Streamlit secrets.")
+        st.stop()
+
+    # Asignar la clave API de OpenAI
+    openai.api_key = OPENAI_API_KEY
+    logging.info("OpenAI API Key successfully retrieved from Streamlit secrets.")
+    
+    return openai
