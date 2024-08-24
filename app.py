@@ -3,6 +3,7 @@ import gpt_config.openai_setup as openai_setup
 
 # Inicializar OpenAI
 openai_client = openai_setup.initialize_openai()
+client = configurar_aplicacion()
 
 # Función para enviar mensajes a la API y obtener la respuesta
 def enviar_mensaje(prompt):
