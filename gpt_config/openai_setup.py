@@ -7,17 +7,14 @@ def initialize_openai():
         if "api_key" in st.secrets["openai"]:
             OPENAI_API_KEY = st.secrets["openai"]["api_key"]
             st.write("API Key de OpenAI cargada correctamente.")
+            return OPENAI_API_KEY
         else:
             st.error("La clave 'api_key' no se encuentra en st.secrets['openai'].")
-            # Imprime las claves disponibles en st.secrets["openai"]
+            # Imprime las claves disponibles en st.secrets['openai']
             st.write("Claves disponibles en 'openai':", list(st.secrets["openai"].keys()))
-            return None
     else:
         st.error("La clave 'openai' no se encuentra en st.secrets.")
         # Imprime las claves disponibles en st.secrets
         st.write("Claves disponibles:", list(st.secrets.keys()))
-        return None
-
-    # Aquí puedes continuar con la configuración de OpenAI Client
-    # openai_client = SomeOpenAIClient(api_key=OPENAI_API_KEY)
-    return OPENAI_API_KEY
+    
+    return None
