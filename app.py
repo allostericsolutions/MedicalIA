@@ -22,12 +22,12 @@ def main():
                     response = openai_client.chat.completions.create(
                         model="gpt-3.5-turbo",  # O cualquier otro modelo compatible
                         messages=[
-                            {"role": "user", "content": prompt}  # No se necesita un rol "system" aquí
+                            {"role": "user", "content": prompt}
                         ]
                     )
 
                     # Muestra la respuesta en la aplicación
-                    st.write(response.choices[0].message['content'].strip())
+                    st.write(response.choices[0].message.content.strip())
                 except Exception as e:
                     st.error(f"Ocurrió un error al obtener la respuesta: {e}")
             else:
