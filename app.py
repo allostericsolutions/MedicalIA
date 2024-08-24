@@ -9,4 +9,3 @@ openai = initialize_openai()
 
 if openai:
     st.success("OpenAI API configurada correctamente.")
-    st.write(f"OpenAI Key usada: {st.secrets['openai']['api_key'][:5]}...")  # Mostrar parcialmente la key para verificar
