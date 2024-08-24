@@ -20,7 +20,7 @@ def main():
                 # Envía la pregunta a la API de OpenAI y recibe la respuesta
                 try:
                     response = openai_client.chat.completions.create(
-                        model="gpt-3.5-turbo",  # O cualquier otro modelo compatible
+                        model="gpt-4o-mini",  # O cualquier otro modelo compatible
                         messages=[
                             {"role": "user", "content": prompt}
                         ]
