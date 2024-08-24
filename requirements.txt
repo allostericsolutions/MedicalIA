@@ -1,0 +1,6 @@
+streamlit==1.36.0
+openai==1.35.10
+pdfminer.six==20231228
+pandas==2.2.2
+altair==5.3.0
+fpdf==1.7.2
