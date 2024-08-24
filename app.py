@@ -19,11 +19,10 @@ def main():
             if prompt:
                 # Envía la pregunta a la API de OpenAI y recibe la respuesta
                 try:
-                    response = openai.ChatCompletion.create(
+                    response = openai_client.chat.completions.create(
                         model="gpt-3.5-turbo",  # O cualquier otro modelo compatible
                         messages=[
-                            {"role": "system", "content": "Eres un asistente útil."}, 
-                            {"role": "user", "content": prompt}
+                            {"role": "user", "content": prompt}  # No se necesita un rol "system" aquí
                         ]
                     )
 
