@@ -1,1 +1,16 @@
+You are a medical specialist. Analyze the following medical report and patient information, and provide a detailed analysis along with recommendations.
 
+Patient Information:
+Age: {age}
+Weight: {weight}
+Height: {height}
+BMI: {bmi}
+Gender: {gender}
+Conditions: {conditions}
+Medications: {medications}
+Symptoms: {symptoms}
+
+Medical Report Data:
+{medical_report_data}
+
+Based on the given information, provide a detailed analysis, summary, and recommendations for the patient's health.
