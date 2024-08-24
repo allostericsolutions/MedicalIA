@@ -1,4 +1,3 @@
-
 import streamlit as st
 from gpt_config import openai_setup
 import openai
@@ -20,17 +19,16 @@ def main():
             if prompt:
                 # Envía la pregunta a la API de OpenAI y recibe la respuesta
                 try:
-                    response = openai.Completion.create(
-                        engine="text-davinci-003",  # Puedes cambiar por el motor que prefieras
-                        prompt=prompt,
-                        max_tokens=150,  # Puedes ajustar el número de tokens según tus necesidades
-                        n=1,
-                        stop=None,
-                        temperature=0.7
+                    response = openai.ChatCompletion.create(
+                        model="gpt-4o-mini",  # Actualiza con el modelo que prefieras, si es necesario
+                        messages=[
+                            {"role": "system", "content": "Eres un asistente útil."}, 
+                            {"role": "user", "content": prompt}
+                        ]
                     )
 
                     # Muestra la respuesta en la aplicación
-                    st.write(response.choices[0].text.strip())
+                    st.write(response.choices[0].message['content'].strip())
                 except Exception as e:
                     st.error(f"Ocurrió un error al obtener la respuesta: {e}")
             else:
