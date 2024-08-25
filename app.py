@@ -33,7 +33,7 @@ def clean_text(raw_text):
         r"Av\s+Carlos\s+Graef\s+Fernández\s+No.*",  # Dirección repetitiva
         r"Tel.*",                              # Teléfonos
         r"Lic\. Sanitaria\s+\d{10}",           # Licencias Sanitarias
-        r"C\.P\. \d{5}",                       # Código Postal
+        r"\bC\.P\.\s\d{5}\b",                  # Código Postal cualquier C.P 5 cifras
         r"México\s+D\.F\.",                    # Ubicación, México D.F
         r"Cuarto:.*",                          # Información de cuarto específico
         r"0001426761.*",                       # Información específica del paciente
