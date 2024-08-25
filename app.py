@@ -16,7 +16,7 @@ def main():
     if openai_client:
         st.write("Cliente de OpenAI inicializado correctamente.")
 
-        # Especificar el modelo de OpenAI (modificar aquí si es necesario cambiar el modelo)
+        # Especificar el modelo de OpenAI según tu configuración actualizada
         modelo = "gpt-4o-mini"
 
         archivos = cargar_documentos()
@@ -34,7 +34,7 @@ def main():
 
                     st.write(f"Tu IMC es {imc:.2f}, lo cual se considera {imc_categoria}.")
             else:
-                st.write(f"Datos del paciente:")
+                st.write("Datos del paciente:")
                 st.write(f"Edad: {st.session_state.datos_paciente['edad']} años")
                 st.write(f"Peso: {st.session_state.datos_paciente['peso']} kg")
                 st.write(f"Altura: {st.session_state.datos_paciente['altura']} cm")
