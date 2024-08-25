@@ -6,24 +6,32 @@ import openai
 # Importar las nuevas funciones
 from funciones.recepcion_docs import cargar_documentos
 from funciones.formulario_datos import formulario_datos
+from funciones.interrogatorio_gpt import interrogatorio_gpt
 
 def main():
     st.title("Aplicación Médica con Streamlit y OpenAI")
 
-    # Inicializar OpenAI
+    # La inicialización de OpenAI ya está configurada por ti.
     openai_client = openai_setup.initialize_openai()
 
     if openai_client:
         st.write("Cliente de OpenAI inicializado correctamente.")
 
         archivos = cargar_documentos()
-        
+
         if archivos:
             datos_paciente = formulario_datos()
 
             st.write("Archivos cargados y datos del paciente recopilados.")
             st.write(datos_paciente)
+
+            # Interrogatorio médico con GPT
+            respuestas_interrogatorio = interrogatorio_gpt(datos_paciente, openai_client)
             
+            if respuestas_interrogatorio:
+                st.write("Respuestas al interrogatorio GPT recopiladas.")
+                st.write(respuestas_interrogatorio)
+
             # Aquí podrías agregar lógica adicional para procesar los archivos y datos del paciente
             # y finalmente enviar a GPT o enviar por correo según sea necesario.
 
