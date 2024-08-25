@@ -9,11 +9,10 @@ def clean_text(raw_text):
         r"PACIENTE:.*",                        # Encabezado de paciente
         r"\d+ de \d+",                         # Números de página (1 de 7, etc.)
         r"Fecha [A-Za-z]+:.*",                 # Encabezado de Fecha (Solicitud, Toma, Impresión)
-        r"Género: \w+.*",                     # Encabezado de género y edad
-        r"No. Orden .*",                       # Encabezado de número de orden
+        r"Género: .* Edad: \d+ Años",          # Encabezado de género y edad
+        r"No\. Orden .*",                      # Encabezado de número de orden
         r"Médico:.*",                          # Encabezado de médico
         r"Servicio:.*",                        # Encabezado de servicio
-        r"Campus:.*",                          # Encabezado de campus
         r"Instrumento:.*",                     # Instrumento utilizado
         r"Usuario:.*",                         # Usuario que hizo el análisis
         r"Metodo:.*",                          # Método utilizado
@@ -25,13 +24,14 @@ def clean_text(raw_text):
         r"\b[0-2]?\d:[0-5]?\d:[0-5]?\d\b",    # Fechas (formato hora:minuto:segundo)
         r"Av\s+Carlos\s+Graef\s+Fernández\s+No.*",  # Dirección repetitiva
         r"Tel.*",                              # Teléfonos
-        r"Lic\.\s+Sanitaria\s+\d{10}",         # Licencias Sanitarias
-        r"[^\S\r\n]*(Campus: Santa Fe)[^\S\r\n]*.*",  # Cualquier mención del "Campus Santa Fe"
-        r"C\.P.*",                             # Código Postal
-        r"México\s+D\.F\.",                     # Ubicación, México D.F
-        r".*? Cuarto:.*",                      # Información de cuarto
+        r"Lic\. Sanitaria\s+\d{10}",           # Licencias Sanitarias
+        r"C\.P\. \d{5}",                       # Código Postal
+        r"México\s+D\.F\.",                    # Ubicación, México D.F
+        r"Cuarto:.*",                          # Información de cuarto específico
         r"0001426761.*",                       # Información específica del paciente
-        r"Fecha Impresión:.*"                  # Fechas de impresión
+        r"Fecha Impresión:.*",                 # Fechas de impresión
+        r"Campus: Santa Fe.*",                 # Información sobre el campus
+        r"^.*Santa Fé.*$",                     # Información relacionada con Santa Fé
     ]
     
     cleaned_text = raw_text
