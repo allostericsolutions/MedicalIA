@@ -9,7 +9,7 @@ def clean_text(raw_text):
         r"PACIENTE:.*",                        # Encabezado de paciente
         r"\d+ de \d+",                         # Números de página (1 de 7, etc.)
         r"Fecha [A-Za-z]+:.*",                 # Encabezado de Fecha (Solicitud, Toma, Impresión)
-        r"Género: .* Edad: .*",                # Encabezado de género y edad
+        r"Género: .+? Edad: .*",               # Encabezado de género y edad
         r"No. Orden .*",                       # Encabezado de número de orden
         r"Médico:.*",                          # Encabezado de médico
         r"Servicio:.*",                        # Encabezado de servicio
@@ -20,13 +20,17 @@ def clean_text(raw_text):
         r"NOTA:.*",                            # Notas
         r"Jefe de laboratorio.*",              # Jefe de laboratorio
         r"Cedula Profesional.*",               # Cédula Profesional
-        r"\b[A-Z][a-z]+\s[A-Z][a-z]+\s[A-Z][a-z]+.*",  # Nombre del paciente repetido
-        r"\b[0-3]?\d/[0-1]?\d/\d{4}\b",        # Fechas (formato día/mes/año)
-        r"\b[0-2]?\d:[0-5]?\d:[0-5]?\d\b",     # Fechas (formato hora:minuto:segundo)
+        r"\b[A-Z][a-z]+\s[A-Z][a-z]+\s[A-Z][a-z]+.*",   # Nombre del paciente repetido
+        r"\b[0-3]?\d/[0-1]?\d/\d{4}\b",       # Fechas (formato día/mes/año)
+        r"\b[0-2]?\d:[0-5]?\d:[0-5]?\d\b",    # Fechas (formato hora:minuto:segundo)
         r"Av\s+Carlos\s+Graef\s+Fernández\s+No.*",  # Dirección repetitiva
         r"Tel.*",                              # Teléfonos
         r"Lic\.\s+Sanitaria\s+\d{10}",         # Licencias Sanitarias
-        r"[^\S\r\n]*(Campus: San Fe)[^\S\r\n]*.*"  # Cualquier mención del "Campus Santa Fe"
+        r"[^\S\r\n]*(Campus: Santa Fe)[^\S\r\n]*.*",  # Cualquier mención del "Campus Santa Fe"
+        r"C\.P.*",                             # Código Postal
+        r"México\s+D\.F\.",                     # Ubicación, México D.F
+        r".*? Cuarto:.*",                      # Información de cuarto
+        r"Edad:.*",                            # Edad
     ]
     
     cleaned_text = raw_text
