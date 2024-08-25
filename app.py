@@ -34,7 +34,7 @@ def clean_text(raw_text):
         r"Tel.*",                               # Teléfonos
         r"Lic\. Sanitaria\s+\d{10}",            # Licencias Sanitarias
         r"C\.P",                                # C.P
-        r"\b\d{5},\b",                          # Cualquier 5 dígitos seguido de una coma
+        r"\b\d{5},?\b",                         # Cualquier secuencia de 5 dígitos seguida opcionalmente de una coma
         r"México\s+D\.F\.",                     # Ubicación, México D.F
         r"Cuarto:.*",                           # Información de cuarto específico
         r"0001426761.*",                        # Información específica del paciente
