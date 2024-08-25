@@ -9,5 +9,5 @@ def formulario_datos():
     
     if st.button("Enviar Datos"):
         st.session_state.datos_paciente = {"edad": edad, "peso": peso, "altura": altura}
-        return st.session_state.datos_paciente  # Devolver el diccionario
-    return None  # Asegurarse de devolver None si no se pulsa el botón
+        return st.session_state.datos_paciente
+    return None
