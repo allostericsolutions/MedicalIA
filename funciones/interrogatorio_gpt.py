@@ -1,8 +1,7 @@
-# funciones/interrogatorio_gpt.py
 import streamlit as st
 import openai
 
-def interrogatorio_gpt(datos_paciente, openai_client):
+def interrogatorio_gpt(datos_paciente, openai_client, modelo):  # Agrega 'modelo' como argumento
     st.header("Interrogatorio Médico con GPT")
 
     # Prompt inicial desde el archivo gpt_config/prompt.txt
@@ -15,7 +14,7 @@ def interrogatorio_gpt(datos_paciente, openai_client):
     # Enviar el prompt a GPT-3 y obtener la respuesta
     try:
         response = openai.ChatCompletion.create(
-            model="gpt-4",  # Usa el modelo apropiado
+            model=modelo,  # Utiliza el argumento 'modelo' aquí
             messages=[
                 {"role": "system", "content": prompt},
                 {"role": "user", "content": "Haz un interrogatorio médico basado en los síntomas dados."},
