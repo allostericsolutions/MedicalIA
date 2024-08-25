@@ -4,53 +4,56 @@ import openai
 def interrogatorio_gpt(datos_paciente, openai_client, modelo):
     st.header("Interrogatorio Médico con GPT")
 
-    # ---->>>  Cargar el prompt y añadir datos del paciente  <<<<-----
+    # Cargar el prompt y añadir datos del paciente
     with open('gpt_config/prompt.txt', 'r') as file:
         prompt = file.read()
-
     prompt += f"\nDatos del paciente:\nEdad: {datos_paciente['edad']} años\nPeso: {datos_paciente['peso']} kg\nTalla: {datos_paciente['talla']} cm\n" 
+
+    # ---->>>  Contenedor para el chat  <<<<-----
+    chat_container = st.container()
 
     # ---->>>  Obtener Síntomas del Usuario  <<<<-----
     st.write("¿Cuáles son tus síntomas?")
     sintomas = st.text_area("", key="sintomas_input")
 
-    # ---->>>  Botón para enviar síntomas  <<<<-----
     if st.button("Enviar Síntomas") or (st.session_state.get("sintomas_enviados", False) and sintomas):
-        st.session_state.sintomas_enviados = True  # Marcar síntomas como enviados
+        st.session_state.sintomas_enviados = True
 
-        # ---->>> Añadir síntomas al prompt  <<<<-----
+        # Añadir síntomas al prompt
         prompt += f"Síntomas: {sintomas}\n"
 
-        # ---->>>  Interacción con GPT  <<<<-----
-        conversation = [{"role": "system", "content": prompt}]
-        
-        # ---->>> Contador para IDs únicos  <<<<-----
-        contador_widgets = 0 
+        # ---->>>  Inicializar la conversación  <<<<-----
+        conversation = [{"role": "system", content: prompt}]
+        st.session_state.conversation = conversation
 
-        while True: 
-            # Obtener la respuesta de GPT
+    if st.session_state.get("sintomas_enviados", False):
+        # ---->>>  Manejar la entrada del usuario  <<<<-----
+        user_input = st.text_area("Tú:", key="user_input")
+
+        if user_input:
+            st.session_state.conversation.append({"role": "user", "content": user_input})
+            user_input = ""  # Limpiar el área de texto
+
+        # ---->>>  Generar respuesta de GPT  <<<<-----
+        if st.session_state.conversation:
+            with chat_container:
+                for message in st.session_state.conversation:
+                    if message["role"] == "user":
+                        st.write("👤 Usuario:", message["content"]) # Mostrar mensaje del usuario
+                    else:
+                        st.write("🤖 GPT:", message["content"]) # Mostrar mensaje de GPT
+
             response = openai_client.chat.completions.create(
                 model=modelo,
-                messages=conversation
+                messages=st.session_state.conversation
             )
-
             message = response.choices[0].message.content
-            st.write("GPT: ", message)
+            st.session_state.conversation.append({"role": "assistant", "content": message})
 
-            # Verificar si GPT ha terminado de preguntar
-            if "¿algo más?" in message.lower():
-                break
-
-            # ---->>>  IDs dinámicos para widgets  <<<<-----
-            user_input = st.text_area("", key=f"user_input_{contador_widgets}")
-            if st.button("Enviar", key=f"send_button_{contador_widgets}") or user_input:
-                conversation.append({"role": "user", "content": user_input})
-
-            contador_widgets += 1  # Incrementar el contador
+            # ---->>>  Mostrar la respuesta de GPT  <<<<-----
+            with chat_container:
+                st.write("🤖 GPT:", message) 
 
         # ---->>>  Mostrar resumen de síntomas (sin recomendaciones)  <<<<-----
         st.write("Resumen de síntomas:")
         st.write(sintomas)
-
-    else:
-        st.session_state.sintomas_enviados = False  
