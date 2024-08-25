@@ -11,46 +11,47 @@ def interrogatorio_gpt(datos_paciente, openai_client, modelo):
     # Contenedor para el chat
     chat_container = st.container()
 
-    # Obtener Síntomas del Usuario
-    st.write("¿Cuáles son tus síntomas?")
-    sintomas = st.text_area("", key="sintomas_input")
+    # Obtener Síntomas del Usuario (solo la primera vez)
+    if "sintomas" not in st.session_state:
+        st.write("¿Cuáles son tus síntomas?")
+        sintomas = st.text_area("", key="sintomas_input")
 
-    if st.button("Enviar Síntomas") or (st.session_state.get("sintomas_enviados", False) and sintomas):
-        st.session_state.sintomas_enviados = True
+        if st.button("Enviar Síntomas") or sintomas:
+            st.session_state.sintomas = sintomas
+    else:
+        sintomas = st.session_state.sintomas
 
-        # Inicializar la conversación
+    # Inicializar la conversación (solo la primera vez)
+    if "conversation" not in st.session_state:
         prompt_inicial = f"{prompt}\nDatos del paciente:\nEdad: {datos_paciente['edad']} años\nPeso: {datos_paciente['peso']} kg\nTalla: {datos_paciente['talla']} cm\nSíntomas: {sintomas}\n"
-        conversation = [{"role": "system", "content": prompt_inicial}]
-        st.session_state.conversation = conversation
+        st.session_state.conversation = [{"role": "system", "content": prompt_inicial}]
+        
+        # --->>>  Obtener y mostrar el primer mensaje de GPT  <<<<----- 
+        response = openai_client.chat.completions.create(
+            model=modelo,
+            messages=st.session_state.conversation
+        )
+        message = response.choices[0].message.content
+        st.session_state.conversation.append({"role": "assistant", "content": message})
 
-        # Mostrar el primer mensaje de GPT (si no se ha enviado aún)
-        if len(st.session_state.conversation) == 1:  
-            response = openai_client.chat.completions.create(
-                model=modelo,
-                messages=st.session_state.conversation
-            )
-            message = response.choices[0].message.content
-            st.session_state.conversation.append({"role": "assistant", "content": message})
+        with chat_container:
+            st.write("🤖 GPT:", message)
 
-            with chat_container:
-                st.write("🤖 GPT:", message) 
+    # Manejar la conversación
+    if st.session_state.get("conversation"):
+        with chat_container:
+            for message in st.session_state.conversation:
+                if message["role"] == "user":
+                    st.write("👤 Usuario:", message["content"])
+                else:
+                    st.write("🤖 GPT:", message["content"])
 
-    if st.session_state.get("sintomas_enviados", False):
-        # Manejar la entrada del usuario
+        # ---->>>  Input del usuario DENTRO del bucle  <<<<-----
         user_input = st.text_area("Tú:", key="user_input")
-
         if user_input:
             st.session_state.conversation.append({"role": "user", "content": user_input})
-            user_input = ""  # Limpiar el área de texto
-
-            # Generar respuesta de GPT (siempre que haya nueva entrada)
-            with chat_container:
-                for message in st.session_state.conversation:
-                    if message["role"] == "user":
-                        st.write("👤 Usuario:", message["content"])
-                    else:
-                        st.write("🤖 GPT:", message["content"])
-
+            
+            # ---->>>  Obtener la respuesta de GPT  <<<<-----
             response = openai_client.chat.completions.create(
                 model=modelo,
                 messages=st.session_state.conversation
@@ -58,11 +59,11 @@ def interrogatorio_gpt(datos_paciente, openai_client, modelo):
             message = response.choices[0].message.content
             st.session_state.conversation.append({"role": "assistant", "content": message})
 
+            # Mostrar el nuevo mensaje de GPT
             with chat_container:
                 st.write("🤖 GPT:", message) 
 
-        # ---->>>  El resumen se mostrará cuando GPT indique que ha terminado  <<<<----- 
-        # (Asegúrate de que tu prompt esté configurado para que GPT indique cuándo ha terminado)
+        # Mostrar resumen de síntomas (cuando GPT lo indique)
         if "resumen de síntomas:" in message.lower(): 
             st.write("Resumen de síntomas:")
-            st.write(sintomas) 
+            st.write(sintomas)
