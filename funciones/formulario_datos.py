@@ -1,4 +1,4 @@
-mport streamlit as st
+import streamlit as st
 
 def formulario_datos():
     st.header("Ingresa tus datos")
