@@ -24,6 +24,9 @@ def interrogatorio_gpt(datos_paciente, openai_client, modelo):
         # ---->>>  Interacción con GPT  <<<<-----
         conversation = [{"role": "system", "content": prompt}]
         
+        # ---->>> Contador para IDs únicos  <<<<-----
+        contador_widgets = 0 
+
         while True: 
             # Obtener la respuesta de GPT
             response = openai_client.chat.completions.create(
@@ -38,10 +41,12 @@ def interrogatorio_gpt(datos_paciente, openai_client, modelo):
             if "¿algo más?" in message.lower():
                 break
 
-            # Obtener la respuesta del usuario 
-            user_input = st.text_area("", key=f"user_input_{len(conversation)}")
-            if st.button("Enviar", key=f"send_button_{len(conversation)}") or user_input:
+            # ---->>>  IDs dinámicos para widgets  <<<<-----
+            user_input = st.text_area("", key=f"user_input_{contador_widgets}")
+            if st.button("Enviar", key=f"send_button_{contador_widgets}") or user_input:
                 conversation.append({"role": "user", "content": user_input})
+
+            contador_widgets += 1  # Incrementar el contador
 
         # ---->>>  Mostrar resumen de síntomas (sin recomendaciones)  <<<<-----
         st.write("Resumen de síntomas:")
