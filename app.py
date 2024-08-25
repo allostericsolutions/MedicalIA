@@ -1,4 +1,4 @@
-import streamlit as st
+mport streamlit as st
 from pdfminer.high_level import extract_text
 import re
 
@@ -7,29 +7,27 @@ def clean_text(raw_text):
     # Expresiones regulares para identificar y eliminar encabezados, notas y detalles no relevantes
     patterns_to_remove = [
         r"PACIENTE:.*",           # Encabezado de paciente
-        r"\d+ de \d+",            # Números de página
-        r"Fecha Nac:.*",          # Encabezado de fecha de nacimiento
+        r"\d+ de \d+",            # Números de página (1 de 7, etc.)
+        r"Fecha [A-Za-z]+:.*",    # Encabezado de Fecha (Solicitud, Toma, Impresión)
         r"Género: .* Edad: .*",   # Encabezado de género y edad
         r"No. Orden .*",          # Encabezado de número de orden
-        r"Fecha Solicitud:.*",    # Encabezado de fecha de solicitud
-        r"Fecha Toma:.*",         # Encabezado de fecha de toma
-        r"Fecha Impresión:.*",    # Encabezado de fecha de impresión
         r"Médico:.*",             # Encabezado de médico
         r"Servicio:.*",           # Encabezado de servicio
         r"Campus:.*",             # Encabezado de campus
-        r"Instrumento:.*",        # Encabezado de instrumento
-        r"Usuario:.*",            # Encabezado de usuario
-        r"Metodo:.*",             # Encabezado de método
+        r"Instrumento:.*",        # Instrumento utilizado
+        r"Usuario:.*",            # Usuario que hizo el análisis
+        r"Metodo:.*",             # Método utilizado
         r"NOTA:.*",               # Notas
-        r"\b\w{,3}\b"             # Palabras pequeñas
+        r"L[a-z]*:.*"             # Líneas abreviadas que empiecen con letra L (por ejemplo, "La, Las, Los")
     ]
     
     cleaned_text = raw_text
     for pattern in patterns_to_remove:
-        cleaned_text = re.sub(pattern, '', cleaned_text)
+        cleaned_text = re.sub(pattern, '', cleaned_text, flags=re.IGNORECASE)
 
-    # Eliminar espacios adicionales y líneas en blanco
-    cleaned_text = re.sub(r'\s+', ' ', cleaned_text).strip()
+    # Retirar líneas vacías y espacios adicionales
+    cleaned_text = re.sub(r'\n\s*\n', '\n', cleaned_text)  # Retirar múltiples saltos de línea
+    cleaned_text = re.sub(r'\s+', ' ', cleaned_text).strip()  # Retirar espacios adicionales
 
     return cleaned_text
 
