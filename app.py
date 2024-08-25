@@ -22,26 +22,35 @@ def main():
         archivos = cargar_documentos()
 
         if archivos:
-            datos_paciente = formulario_datos()
+            if "datos_paciente" not in st.session_state:
+                datos_paciente = formulario_datos()
+                if datos_paciente:
+                    st.session_state.datos_paciente = datos_paciente
 
-            if datos_paciente:
-                # Calcular el IMC
-                imc, imc_categoria = calcular_imc(datos_paciente['peso'], datos_paciente['altura'])
-                st.write(f"Tu IMC es {imc:.2f}, lo cual se considera {imc_categoria}.")
+                    # Calcular y mostrar IMC
+                    imc, imc_categoria = calcular_imc(datos_paciente['peso'], datos_paciente['altura'])
+                    st.session_state.imc = imc
+                    st.session_state.imc_categoria = imc_categoria
 
-                # Recopilación de síntomas
-                st.write("Por favor, ingresa tus síntomas:")
-                sintomas = st.text_area("")
+                    st.write(f"Tu IMC es {imc:.2f}, lo cual se considera {imc_categoria}.")
+            else:
+                st.write(f"Datos del paciente:")
+                st.write(f"Edad: {st.session_state.datos_paciente['edad']} años")
+                st.write(f"Peso: {st.session_state.datos_paciente['peso']} kg")
+                st.write(f"Altura: {st.session_state.datos_paciente['altura']} cm")
+                st.write(f"IMC: {st.session_state.imc:.2f} ({st.session_state.imc_categoria})")
 
-                if st.button("Enviar Síntomas"):
-                    st.session_state.sintomas = sintomas
-                    st.session_state.conversation = iniciar_conversacion(datos_paciente, sintomas)
+                if "sintomas" not in st.session_state:
+                    st.write("Por favor, ingresa tus síntomas:")
+                    sintomas = st.text_area("")
+                    if st.button("Enviar Síntomas"):
+                        st.session_state.sintomas = sintomas
+                        st.session_state.conversation = iniciar_conversacion(st.session_state.datos_paciente, sintomas)
+                        st.experimental_rerun()
 
-                # Manejar la conversación con el asistente médico
-                if "conversation" in st.session_state:
+                if "sintomas" in st.session_state:
                     manejar_conversacion(openai_client, modelo)
 
-                # Mostrar el resumen final
                 if st.session_state.get("mostrar_resumen"):
                     mostrar_resumen()
 
