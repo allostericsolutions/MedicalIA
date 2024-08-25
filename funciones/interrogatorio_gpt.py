@@ -11,9 +11,9 @@ def interrogatorio_gpt(datos_paciente, openai_client, modelo):
     # Añadir los datos del paciente al prompt
     prompt += f"\nDatos del paciente:\nEdad: {datos_paciente['edad']} años\nPeso: {datos_paciente['peso']} kg\nTalla: {datos_paciente['talla']} cm\nSíntomas: {datos_paciente['sintomas']}\n"
 
-    # Enviar el prompt a GPT-3 y obtener la respuesta
+    # Enviar el prompt a GPT y obtener la respuesta
     try:
-        response = openai.ChatCompletion.create(
+        response = openai_client.chat.completions.create( # Actualización para OpenAI >= 1.0.0
             model=modelo,  # Usa el modelo apropiado
             messages=[
                 {"role": "system", "content": prompt},
@@ -21,7 +21,7 @@ def interrogatorio_gpt(datos_paciente, openai_client, modelo):
             ]
         )
         
-        interrogatorio = response['choices'][0]['message']['content']
+        interrogatorio = response.choices[0].message.content # Actualización para OpenAI >= 1.0.0
         st.write("Preguntas generadas por GPT:")
         st.write(interrogatorio)
 
@@ -39,14 +39,14 @@ def interrogatorio_gpt(datos_paciente, openai_client, modelo):
         # Enviar las respuestas a GPT para obtener la respuesta final
         prompt_final = f"Las respuestas del paciente son: \n{'\n'.join(respuestas)}\n\nBasándose en esta información, ¿cuál es tu diagnóstico y recomendaciones para el paciente?"
 
-        response_final = openai.ChatCompletion.create(
+        response_final = openai_client.chat.completions.create( # Actualización para OpenAI >= 1.0.0
             model=modelo,  # Utilizar el mismo modelo que antes
             messages=[
                 {"role": "system", "content": prompt_final},
             ]
         )
 
-        respuesta_gpt = response_final['choices'][0]['message']['content']
+        respuesta_gpt = response_final.choices[0].message.content # Actualización para OpenAI >= 1.0.0
         st.write("Respuesta de GPT:")
         st.write(respuesta_gpt)
 
