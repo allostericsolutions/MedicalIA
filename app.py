@@ -1,4 +1,4 @@
-import streamlit as st
+mport streamlit as st
 from pdfminer.high_level import extract_text
 import re
 
@@ -33,7 +33,8 @@ def clean_text(raw_text):
         r"Av\s+Carlos\s+Graef\s+Fernández\s+No.*",  # Dirección repetitiva
         r"Tel.*",                               # Teléfonos
         r"Lic\. Sanitaria\s+\d{10}",            # Licencias Sanitarias
-        r"C\.P\.\s\d{5},",                     # Cualquier C.P seguido de 5 dígitos, con o sin coma
+        r"C\.P",                                # C.P
+        r"\b\d{5},\b",                          # Cualquier 5 dígitos seguido de una coma
         r"México\s+D\.F\.",                     # Ubicación, México D.F
         r"Cuarto:.*",                           # Información de cuarto específico
         r"0001426761.*",                        # Información específica del paciente
