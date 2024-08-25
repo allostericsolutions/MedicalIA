@@ -1,9 +1,14 @@
+# app.py
 import streamlit as st
 from gpt_config import openai_setup
 import openai
 
+# Importar las nuevas funciones
+from funciones.recepcion_docs import cargar_documentos
+from funciones.formulario_datos import formulario_datos
+
 def main():
-    st.title("Tu Aplicación de Streamlit con OpenAI")
+    st.title("Aplicación Médica con Streamlit y OpenAI")
 
     # Inicializar OpenAI
     openai_client = openai_setup.initialize_openai()
@@ -11,27 +16,17 @@ def main():
     if openai_client:
         st.write("Cliente de OpenAI inicializado correctamente.")
 
-        # Campo de texto para que el usuario introduzca una pregunta
-        prompt = st.text_input("Haz una pregunta a GPT-3:")
+        archivos = cargar_documentos()
+        
+        if archivos:
+            datos_paciente = formulario_datos()
 
-        # Botón para enviar la pregunta
-        if st.button("Enviar"):
-            if prompt:
-                # Envía la pregunta a la API de OpenAI y recibe la respuesta
-                try:
-                    response = openai_client.chat.completions.create(
-                        model="gpt-4o-mini",  # O cualquier otro modelo compatible
-                        messages=[
-                            {"role": "user", "content": prompt}
-                        ]
-                    )
+            st.write("Archivos cargados y datos del paciente recopilados.")
+            st.write(datos_paciente)
+            
+            # Aquí podrías agregar lógica adicional para procesar los archivos y datos del paciente
+            # y finalmente enviar a GPT o enviar por correo según sea necesario.
 
-                    # Muestra la respuesta en la aplicación
-                    st.write(response.choices[0].message.content.strip())
-                except Exception as e:
-                    st.error(f"Ocurrió un error al obtener la respuesta: {e}")
-            else:
-                st.error("Por favor, introduce una pregunta.")
     else:
         st.error("No se pudo inicializar el cliente de OpenAI debido a problemas con la API Key.")
 
