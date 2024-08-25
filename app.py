@@ -1,44 +1,48 @@
 import streamlit as st
-from gpt_config import openai_setup
-import openai
+from pdfminer.high_level import extract_text
+import re
 
-from funciones.recepcion_docs import cargar_documentos
-from funciones.formulario_datos import formulario_datos
-from funciones.interrogatorio_gpt import interrogatorio_gpt
+# Función para limpiar el texto extraído
+def clean_text(raw_text):
+    # Expresiones regulares para identificar y eliminar información repetitiva
+    patterns_to_remove = [
+        r"Campus Santa Fe[\s\S]*?México D.F.Tel. 1103-1600 Lic. Sanitaria 1005001030",
+        r"PACIENTE:.*",
+        r"Médico:.*",
+        r"Fecha Solicitud:.*",
+        r"Fecha Toma:.*",
+        r"Fecha Impresión:.*",
+        r"Usuario:.*",
+        r"Instrumento:.*",
+        r"Metodo:.*"
+    ]
+    
+    cleaned_text = raw_text
+    for pattern in patterns_to_remove:
+        cleaned_text = re.sub(pattern, '', cleaned_text)
 
-def main():
-    st.title("Aplicación Médica con Streamlit y OpenAI")
+    # Eliminar líneas en blanco y espacios adicionales
+    cleaned_text = re.sub(r'\s+', ' ', cleaned_text).strip()
 
-    openai_client = openai_setup.initialize_openai()
+    return cleaned_text
 
-    if openai_client:
-        st.write("Cliente de OpenAI inicializado correctamente.")
-        modelo = "gpt-4" # O el modelo que desees usar
+# Subida de Archivos
+uploaded_files = st.file_uploader("Sube uno o más archivos PDF", type="pdf", accept_multiple_files=True)
 
-        archivos = cargar_documentos() # Primero cargar archivos
-        datos_biometricos = formulario_datos() # Luego obtener datos biométricos y síntomas
-
-        if datos_biometricos:
-            # Aquí procesarías los archivos y obtendrías la información relevante
-            informacion_pdfs = "Información extraída de los PDFs..." # Reemplaza con tu lógica actual
-
-            # Combinar información para enviar a GPT
-            informacion_completa = f"Información del paciente:\n\nBiometría: {datos_biometricos}\n\nSíntomas: {datos_biometricos['sintomas']}\n\nInformación de los PDFs: {informacion_pdfs}"
-            
-            try:
-                conversacion = interrogatorio_gpt(datos_biometricos, openai_client, modelo)
-                # Mostrar la conversación (opcional)
-                for mensaje in conversacion:
-                    if mensaje["role"] == "user":
-                        st.write(f"👤 Usuario: {mensaje['content']}")
-                    else:
-                        st.write(f"🤖 GPT: {mensaje['content']}")
-            except Exception as e:
-                st.error(f"Error en el interrogatorio: {e}")
-        else:
-            st.error("Por favor, introduce tus datos.")
-    else:
-        st.error("No se pudo inicializar el cliente de OpenAI.")
-
-if __name__ == "__main__":
-    main()
+# Verificar si se han subido archivos
+if uploaded_files:
+    st.write(f"Se han subido {len(uploaded_files)} archivos.")
+    
+    for i, uploaded_file in enumerate(uploaded_files):
+        # Extraer el texto usando pdfminer
+        text = extract_text(uploaded_file)
+        
+        # Limpiar el texto
+        cleaned_text = clean_text(text)
+        
+        # Mostrar el texto original y el texto limpio
+        st.markdown(f"### Texto Original del Archivo {i+1}")
+        st.text_area(f"Texto Original del Archivo {i+1}", value=text, height=300)
+        
+        st.markdown(f"### Texto Limpio del Archivo {i+1}")
+        st.text_area(f"Texto Limpio del Archivo {i+1}", value=cleaned_text, height=300)
