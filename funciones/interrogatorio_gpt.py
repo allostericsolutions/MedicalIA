@@ -1,7 +1,7 @@
 import streamlit as st
 import openai
 
-def interrogatorio_gpt(datos_paciente, openai_client, modelo):  # Agrega 'modelo' como argumento
+def interrogatorio_gpt(datos_paciente, openai_client, modelo):
     st.header("Interrogatorio Médico con GPT")
 
     # Prompt inicial desde el archivo gpt_config/prompt.txt
@@ -14,10 +14,10 @@ def interrogatorio_gpt(datos_paciente, openai_client, modelo):  # Agrega 'modelo
     # Enviar el prompt a GPT-3 y obtener la respuesta
     try:
         response = openai.ChatCompletion.create(
-            model=modelo,  # Utiliza el argumento 'modelo' aquí
+            model=modelo,  # Usa el modelo apropiado
             messages=[
                 {"role": "system", "content": prompt},
-                {"role": "user", "content": "Haz un interrogatorio médico basado en los síntomas dados."},
+                {"role": "user", "content": "Haz un interrogatorio médico basado en los síntomas dados. Presenta las preguntas una a una."},
             ]
         )
         
@@ -25,9 +25,31 @@ def interrogatorio_gpt(datos_paciente, openai_client, modelo):  # Agrega 'modelo
         st.write("Preguntas generadas por GPT:")
         st.write(interrogatorio)
 
-        # Recolección de respuestas a las preguntas generadas por GPT
-        respuestas = st.text_area("Responde las preguntas generadas por GPT aquí:")
-        
+        # Separar las preguntas para presentarlas individualmente
+        preguntas = interrogatorio.split("\n")
+
+        # Mostrar cada pregunta en una ventana de diálogo separada
+        respuestas = []
+        for pregunta in preguntas:
+            if pregunta.strip():  # Ignorar líneas vacías
+                respuesta = st.text_area(pregunta)
+                respuestas.append(respuesta)
+
+        # Una vez que el usuario ha respondido todas las preguntas
+        # Enviar las respuestas a GPT para obtener la respuesta final
+        prompt_final = f"Las respuestas del paciente son: \n{'\n'.join(respuestas)}\n\nBasándose en esta información, ¿cuál es tu diagnóstico y recomendaciones para el paciente?"
+
+        response_final = openai.ChatCompletion.create(
+            model=modelo,  # Utilizar el mismo modelo que antes
+            messages=[
+                {"role": "system", "content": prompt_final},
+            ]
+        )
+
+        respuesta_gpt = response_final['choices'][0]['message']['content']
+        st.write("Respuesta de GPT:")
+        st.write(respuesta_gpt)
+
         return respuestas
 
     except Exception as e:
