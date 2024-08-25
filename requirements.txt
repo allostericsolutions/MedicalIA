@@ -4,3 +4,6 @@ pdfminer.six==20231228
 pandas==2.2.2
 altair==5.3.0
 fpdf==1.7.2
+streamlit
+PyMuPDF
+pdfplumber
