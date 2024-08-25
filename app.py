@@ -1,5 +1,6 @@
 import streamlit as st
 from gpt_config.openai_setup import initialize_openai
+import openai  # Asegura la importación del módulo openai
 from pdfminer.high_level import extract_text
 import re
 
