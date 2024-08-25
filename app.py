@@ -19,11 +19,13 @@ def main():
         # Especificar el modelo de OpenAI (modificar aquí si es necesario cambiar el modelo)
         modelo = "gpt-4"
 
-        datos_paciente = formulario_datos()  # Obtener datos del paciente primero
+        # Cargar archivos primero
+        archivos = cargar_documentos()
+
+        # Luego obtener datos del paciente
+        datos_paciente = formulario_datos()  
 
         if datos_paciente:  # Verificar si se recibieron datos
-            archivos = cargar_documentos()
-
             if archivos:
                 st.write("Archivos cargados y datos del paciente recopilados.")
                 st.write(datos_paciente)
