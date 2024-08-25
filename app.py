@@ -61,11 +61,22 @@ def clean_text(raw_text):
 
 # Función para enviar el texto filtrado a GPT y obtener la respuesta
 def enviar_a_gpt(client, texto_limpio):
-    response = client.Completion.create(
-        model="gpt-3.5-turbo",  # Utiliza tu modelo configurado
-        messages=[{"role": "user", "content": texto_limpio}]
-    )
-    return response.choices[0].text.strip()
+    # Verificación básica de la inicialización correcta del cliente
+    if client is None:
+        st.error("El cliente de OpenAI no está inicializado.")
+        return None
+
+    try:
+        # Usar directamente openai.Completion.create
+        response = openai.Completion.create(
+            model="gpt-3.5-turbo",  # Utiliza tu modelo configurado correcto
+            prompt=texto_limpio,
+            max_tokens=500  # Ajusta según tus necesidades
+        )
+        return response.choices[0].text.strip()
+    except Exception as e:
+        st.error(f"Error al llamar a OpenAI: {e}")
+        return None
 
 def main():
     st.title("Aplicación Médica con Streamlit y OpenAI")
@@ -107,9 +118,10 @@ def main():
                 # Enviar el texto limpio a GPT y obtener la respuesta
                 gpt_response = enviar_a_gpt(openai_client, cleaned_text)
                 
-                # Mostrar la respuesta de GPT
-                st.markdown(f"### Respuesta de GPT para el Archivo {i+1}")
-                st.text_area(f"Respuesta GPT del Archivo {i+1}", value=gpt_response, height=300)
+                if gpt_response:
+                    # Mostrar la respuesta de GPT
+                    st.markdown(f"### Respuesta de GPT para el Archivo {i+1}")
+                    st.text_area(f"Respuesta GPT del Archivo {i+1}", value=gpt_response, height=300)
 
             datos_paciente = formulario_datos()
             st.write("Datos del paciente recopilados.")
