@@ -2,18 +2,11 @@ import streamlit as st
 import openai
 
 def interrogatorio_gpt(datos_paciente, openai_client, modelo):
-    st.header("Interrogatorio Médico con GPT")
-
-    # Cargar el prompt (NO se envía a GPT en la conversación)
-    with open('gpt_config/prompt.txt', 'r') as file:
-        prompt = file.read()
-
-    # Contenedor para el chat
-    chat_container = st.container()
+    # ... (resto del código)
 
     # Inicializar la conversación con la pregunta inicial de GPT
     if "conversation" not in st.session_state:
-        prompt_inicial = f"{prompt}\nDatos del paciente:\nEdad: {datos_paciente['edad']} años\nPeso: {datos_paciente['peso']} kg\nTalla: {datos_paciente['talla']} cm\n\nHola, ¿podrías contarme cuáles son tus síntomas?" 
+        prompt_inicial = f"{prompt}\nDatos del paciente:\nEdad: {datos_paciente['edad']} años\nPeso: {datos_paciente['peso']} kg\nAltura: {datos_paciente['altura']} cm\n\nHola, ¿podrías contarme cuáles son tus síntomas?" 
         st.session_state.conversation = [{"role": "system", "content": prompt_inicial}]
         
     # Manejar la conversación (similar a como lo hacías antes)
