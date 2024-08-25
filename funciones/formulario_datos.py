@@ -9,21 +9,5 @@ def formulario_datos():
     
     if st.button("Enviar Datos"):
         st.session_state.datos_paciente = {"edad": edad, "peso": peso, "altura": altura}
-        return st.session_state.datos_paciente
-    return None
-
-def calcular_imc(peso, altura):
-    if altura > 0:
-        altura_m = altura / 100
-        imc = peso / (altura_m ** 2)
-        if imc < 18.5:
-            categoria = "bajo peso"
-        elif 18.5 <= imc < 24.9:
-            categoria = "peso normal"
-        elif 25 <= imc < 29.9:
-            categoria = "sobrepeso"
-        else:
-            categoria = "obesidad"
-        return imc, categoria
-    else:
-        return None, None
+        return st.session_state.datos_paciente  # Devolver el diccionario
+    return None  # Asegurarse de devolver None si no se pulsa el botón
