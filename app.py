@@ -9,19 +9,27 @@ def clean_text(raw_text):
         r"PACIENTE:.*",                        # Encabezado de paciente
         r"\d+ de \d+",                         # Números de página (1 de 7, etc.)
         r"Fecha [A-Za-z]+:.*",                 # Encabezado de Fecha (Solicitud, Toma, Impresión)
-        r"Género: .* Edad: \d+ Años",          # Encabezado de género y edad
+        r"Género: \w+",                        # Encabezado de género
+        r"Edad: \d+ Años",                     # Encabezado de edad
         r"No\. Orden .*",                      # Encabezado de número de orden
         r"Médico:.*",                          # Encabezado de médico
         r"Servicio:.*",                        # Encabezado de servicio
+        r"Campus:.*",                          # Información sobre el campus
         r"Instrumento:.*",                     # Instrumento utilizado
         r"Usuario:.*",                         # Usuario que hizo el análisis
         r"Metodo:.*",                          # Método utilizado
         r"NOTA:.*",                            # Notas
         r"Jefe de laboratorio.*",              # Jefe de laboratorio
-        r"Cedula Profesional.*",               # Cédula Profesional
-        r"\b[A-Z][a-z]+\s[A-Z][a-z]+\s[A-Z][a-z]+.*",   # Nombre del paciente repetido
-        r"\b[0-3]?\d/[0-1]?\d/\d{4}\b",       # Fechas (formato día/mes/año)
-        r"\b[0-2]?\d:[0-5]?\d:[0-5]?\d\b",    # Fechas (formato hora:minuto:segundo)
+        r"JEFE LABORATORIO.*",                 # Jefe de laboratorio en mayúsculas
+        r"Sucursal.*",                         # Sucursal
+        r"Liberó.*",                           # Liberó
+        r"Paciente.*",                         # Paciente
+        r"N° Paciente.*",                      # Número de Paciente
+        r"interpretación deberá.*",            # Frases de interpretación
+        r"Página.*",                           # Página
+        r"\b[A-Z][a-z]+\s[A-Z][a-z]+\s[A-Z][a-z]+.*",  # Nombre del paciente repetido
+        r"\b[0-3]?\d/[0-1]?\d/\d{4}\b",        # Fechas (formato día/mes/año)
+        r"\b[0-2]?\d:[0-5]?\d:[0-5]?\d\b",     # Fechas (formato hora:minuto:segundo)
         r"Av\s+Carlos\s+Graef\s+Fernández\s+No.*",  # Dirección repetitiva
         r"Tel.*",                              # Teléfonos
         r"Lic\. Sanitaria\s+\d{10}",           # Licencias Sanitarias
@@ -30,8 +38,9 @@ def clean_text(raw_text):
         r"Cuarto:.*",                          # Información de cuarto específico
         r"0001426761.*",                       # Información específica del paciente
         r"Fecha Impresión:.*",                 # Fechas de impresión
-        r"Campus: Santa Fe.*",                 # Información sobre el campus
-        r"^.*Santa Fé.*$",                     # Información relacionada con Santa Fé
+        r"NSO",                                # Información de NSO
+        r"\d{1,4}-\d{1,4}",                    # Rangos numéricos como 70-1190, 0.00-150.00, 150-500
+        r"Método.*"                            # Método
     ]
     
     cleaned_text = raw_text
