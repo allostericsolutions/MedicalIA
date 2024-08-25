@@ -11,33 +11,12 @@ def interrogatorio_gpt(datos_paciente, openai_client, modelo):
     # Contenedor para el chat
     chat_container = st.container()
 
-    # Obtener Síntomas del Usuario (solo la primera vez)
-    if "sintomas" not in st.session_state:
-        st.write("¿Cuáles son tus síntomas?")
-        sintomas = st.text_area("", key="sintomas_input")
-
-        if st.button("Enviar Síntomas") or sintomas:
-            st.session_state.sintomas = sintomas
-    else:
-        sintomas = st.session_state.sintomas
-
-    # Inicializar la conversación (solo la primera vez)
+    # Inicializar la conversación con la pregunta inicial de GPT
     if "conversation" not in st.session_state:
-        prompt_inicial = f"{prompt}\nDatos del paciente:\nEdad: {datos_paciente['edad']} años\nPeso: {datos_paciente['peso']} kg\nTalla: {datos_paciente['talla']} cm\nSíntomas: {sintomas}\n"
+        prompt_inicial = f"{prompt}\nDatos del paciente:\nEdad: {datos_paciente['edad']} años\nPeso: {datos_paciente['peso']} kg\nTalla: {datos_paciente['talla']} cm\n\nHola, ¿podrías contarme cuáles son tus síntomas?" 
         st.session_state.conversation = [{"role": "system", "content": prompt_inicial}]
         
-        # Obtener y mostrar el primer mensaje de GPT
-        response = openai_client.chat.completions.create(
-            model=modelo,
-            messages=st.session_state.conversation
-        )
-        message = response.choices[0].message.content
-        st.session_state.conversation.append({"role": "assistant", "content": message})
-
-        with chat_container:
-            st.write("🤖 GPT:", message)
-
-    # Manejar la conversación
+    # Manejar la conversación (similar a como lo hacías antes)
     if st.session_state.get("conversation"):
         with chat_container:
             for message in st.session_state.conversation:
@@ -46,7 +25,7 @@ def interrogatorio_gpt(datos_paciente, openai_client, modelo):
                 else:
                     st.write("🤖 GPT:", message["content"])
 
-        # Input del usuario DENTRO del bucle
+        # Input del usuario
         user_input = st.text_area("Tú:", key="user_input")
         if user_input:
             st.session_state.conversation.append({"role": "user", "content": user_input})
@@ -56,14 +35,12 @@ def interrogatorio_gpt(datos_paciente, openai_client, modelo):
                 model=modelo,
                 messages=st.session_state.conversation
             )
-            message = response.choices[0].message.content  # Obtener el contenido de la respuesta
+            message = response.choices[0].message.content 
             st.session_state.conversation.append({"role": "assistant", "content": message})
 
             # Mostrar el nuevo mensaje de GPT
             with chat_container:
                 st.write("🤖 GPT:", message) 
 
-        # Mostrar resumen de síntomas (cuando GPT lo indique)
-        if "resumen de síntomas:" in message.content.lower():  # Acceder al atributo content
-            st.write("Resumen de síntomas:")
-            st.write(sintomas)
+    # (Opcional) Devolver toda la conversación para su posterior procesamiento
+    return st.session_state.conversation 
