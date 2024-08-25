@@ -9,7 +9,7 @@ def clean_text(raw_text):
         r"PACIENTE:.*",                        # Encabezado de paciente
         r"\d+ de \d+",                         # Números de página (1 de 7, etc.)
         r"Fecha [A-Za-z]+:.*",                 # Encabezado de Fecha (Solicitud, Toma, Impresión)
-        r"Género: .+? Edad: .*",               # Encabezado de género y edad
+        r"Género: \w+.*",                     # Encabezado de género y edad
         r"No. Orden .*",                       # Encabezado de número de orden
         r"Médico:.*",                          # Encabezado de médico
         r"Servicio:.*",                        # Encabezado de servicio
@@ -30,7 +30,8 @@ def clean_text(raw_text):
         r"C\.P.*",                             # Código Postal
         r"México\s+D\.F\.",                     # Ubicación, México D.F
         r".*? Cuarto:.*",                      # Información de cuarto
-        r"Edad:.*",                            # Edad
+        r"0001426761.*",                       # Información específica del paciente
+        r"Fecha Impresión:.*"                  # Fechas de impresión
     ]
     
     cleaned_text = raw_text
