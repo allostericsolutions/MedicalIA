@@ -13,27 +13,30 @@ def main():
 
     if openai_client:
         st.write("Cliente de OpenAI inicializado correctamente.")
-        modelo = "gpt-4"  # O el modelo que desees usar
+        modelo = "gpt-4" # O el modelo que desees usar
 
         archivos = cargar_documentos() # Primero cargar archivos
         datos_biometricos = formulario_datos() # Luego obtener datos biométricos y síntomas
 
         if datos_biometricos:
             # Aquí procesarías los archivos y obtendrías la información relevante
-            informacion_pdfs = "Información extraída de los PDFs..."  # Reemplaza con tu lógica actual
-            
+            informacion_pdfs = "Información extraída de los PDFs..." # Reemplaza con tu lógica actual
+
             # Combinar información para enviar a GPT
             informacion_completa = f"Información del paciente:\n\nBiometría: {datos_biometricos}\n\nSíntomas: {datos_biometricos['sintomas']}\n\nInformación de los PDFs: {informacion_pdfs}"
-
-            conversacion = interrogatorio_gpt(informacion_completa, openai_client, modelo)
-
-            # Mostrar la conversación (opcional)
-            for mensaje in conversacion:
-                if mensaje["role"] == "user":
-                    st.write(f"👤 Usuario: {mensaje['content']}")
-                else:
-                    st.write(f"🤖 GPT: {mensaje['content']}")
-
+            
+            try:
+                conversacion = interrogatorio_gpt(datos_biometricos, openai_client, modelo)
+                # Mostrar la conversación (opcional)
+                for mensaje in conversacion:
+                    if mensaje["role"] == "user":
+                        st.write(f"👤 Usuario: {mensaje['content']}")
+                    else:
+                        st.write(f"🤖 GPT: {mensaje['content']}")
+            except Exception as e:
+                st.error(f"Error en el interrogatorio: {e}")
+        else:
+            st.error("Por favor, introduce tus datos.")
     else:
         st.error("No se pudo inicializar el cliente de OpenAI.")
 
