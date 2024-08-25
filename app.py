@@ -16,7 +16,7 @@ def main():
     if openai_client:
         st.write("Cliente de OpenAI inicializado correctamente.")
 
-        # Especificar el modelo de OpenAI (modificar aquí si es necesario cambiar el modelo)
+        # Especificar el modelo de OpenAI 
         modelo = "gpt-4"
 
         # Cargar archivos primero
@@ -25,20 +25,22 @@ def main():
         # Luego obtener datos del paciente
         datos_paciente = formulario_datos()  
 
-        if datos_paciente:  # Verificar si se recibieron datos
+        if datos_paciente:
             if archivos:
                 st.write("Archivos cargados y datos del paciente recopilados.")
                 st.write(datos_paciente)
 
                 # Interrogatorio médico con GPT
                 respuestas_interrogatorio = interrogatorio_gpt(datos_paciente, openai_client, modelo)
-                
-                if respuestas_interrogatorio:
-                    st.write("Respuestas al interrogatorio GPT recopiladas.")
-                    st.write(respuestas_interrogatorio)
 
-                # Aquí podrías agregar lógica adicional para procesar los archivos y datos del paciente
-                # y finalmente enviar a GPT o enviar por correo según sea necesario.
+                if respuestas_interrogatorio:
+                    # Mostrar cada mensaje en la conversación
+                    for mensaje in respuestas_interrogatorio:
+                        if mensaje["role"] == "user":
+                            st.write(f"👤 Usuario: {mensaje['content']}")
+                        else:
+                            st.write(f"🤖 GPT: {mensaje['content']}")
+
     else:
         st.error("No se pudo inicializar el cliente de OpenAI debido a problemas con la API Key.")
 
