@@ -9,10 +9,10 @@ def interrogatorio_gpt(datos_paciente, openai_client, modelo):
         prompt = file.read()
     prompt += f"\nDatos del paciente:\nEdad: {datos_paciente['edad']} años\nPeso: {datos_paciente['peso']} kg\nTalla: {datos_paciente['talla']} cm\n" 
 
-    # ---->>>  Contenedor para el chat  <<<<-----
+    # Contenedor para el chat
     chat_container = st.container()
 
-    # ---->>>  Obtener Síntomas del Usuario  <<<<-----
+    # Obtener Síntomas del Usuario
     st.write("¿Cuáles son tus síntomas?")
     sintomas = st.text_area("", key="sintomas_input")
 
@@ -22,19 +22,19 @@ def interrogatorio_gpt(datos_paciente, openai_client, modelo):
         # Añadir síntomas al prompt
         prompt += f"Síntomas: {sintomas}\n"
 
-        # ---->>>  Inicializar la conversación  <<<<-----
-        conversation = [{"role": "system", content: prompt}]
+        # Inicializar la conversación  (CORREGIDO)
+        conversation = [{"role": "system", "content": prompt}] 
         st.session_state.conversation = conversation
 
     if st.session_state.get("sintomas_enviados", False):
-        # ---->>>  Manejar la entrada del usuario  <<<<-----
+        # Manejar la entrada del usuario
         user_input = st.text_area("Tú:", key="user_input")
 
         if user_input:
             st.session_state.conversation.append({"role": "user", "content": user_input})
             user_input = ""  # Limpiar el área de texto
 
-        # ---->>>  Generar respuesta de GPT  <<<<-----
+        # Generar respuesta de GPT
         if st.session_state.conversation:
             with chat_container:
                 for message in st.session_state.conversation:
@@ -50,10 +50,10 @@ def interrogatorio_gpt(datos_paciente, openai_client, modelo):
             message = response.choices[0].message.content
             st.session_state.conversation.append({"role": "assistant", "content": message})
 
-            # ---->>>  Mostrar la respuesta de GPT  <<<<-----
+            # Mostrar la respuesta de GPT
             with chat_container:
                 st.write("🤖 GPT:", message) 
 
-        # ---->>>  Mostrar resumen de síntomas (sin recomendaciones)  <<<<-----
+        # Mostrar resumen de síntomas (sin recomendaciones)
         st.write("Resumen de síntomas:")
         st.write(sintomas)
