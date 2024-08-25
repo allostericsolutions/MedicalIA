@@ -18,7 +18,11 @@ def clean_text(raw_text):
         r"Usuario:.*",            # Usuario que hizo el análisis
         r"Metodo:.*",             # Método utilizado
         r"NOTA:.*",               # Notas
-        r"L[a-z]*:.*"             # Líneas abreviadas que empiecen con letra L (por ejemplo, "La, Las, Los")
+        r"Jefe de laboratorio.*", # Jefe de laboratorio
+        r"Cedula Profesional.*",  # Cédula Profesional
+        r"\b[A-Z][a-z]+\s[A-Z][a-z]+\s[A-Z][a-z]+.*",  # Nombre del paciente repetido
+        r"\b[0-3]?\d/[0-1]?\d/\d{4}\b", # Fechas (formato día/mes/año)
+        r"\b[0-2]?\d:[0-5]?\d:[0-5]?\d\b"  # Fechas (formato hora:minuto:segundo)
     ]
     
     cleaned_text = raw_text
