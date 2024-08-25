@@ -1,12 +1,11 @@
-# app.py
 import streamlit as st
 from gpt_config import openai_setup
 import openai
 
 # Importar las nuevas funciones
 from funciones.recepcion_docs import cargar_documentos
-from funciones.formulario_datos import formulario_datos
-from funciones.interrogatorio_gpt import interrogatorio_gpt
+from funciones.formulario_datos import formulario_datos, calcular_imc
+from funciones.interrogatorio_gpt import iniciar_conversacion, manejar_conversacion, mostrar_resumen
 
 def main():
     st.title("Aplicación Médica con Streamlit y OpenAI")
@@ -25,18 +24,26 @@ def main():
         if archivos:
             datos_paciente = formulario_datos()
 
-            st.write("Archivos cargados y datos del paciente recopilados.")
-            st.write(datos_paciente)
+            if datos_paciente:
+                # Calcular el IMC
+                imc, imc_categoria = calcular_imc(datos_paciente['peso'], datos_paciente['altura'])
+                st.write(f"Tu IMC es {imc:.2f}, lo cual se considera {imc_categoria}.")
 
-            # Interrogatorio médico con GPT
-            respuestas_interrogatorio = interrogatorio_gpt(datos_paciente, openai_client, modelo)  # Pasa el argumento 'modelo'
-            
-            if respuestas_interrogatorio:
-                st.write("Respuestas al interrogatorio GPT recopiladas.")
-                st.write(respuestas_interrogatorio)
+                # Recopilación de síntomas
+                st.write("Por favor, ingresa tus síntomas:")
+                sintomas = st.text_area("")
 
-            # Aquí podrías agregar lógica adicional para procesar los archivos y datos del paciente
-            # y finalmente enviar a GPT o enviar por correo según sea necesario.
+                if st.button("Enviar Síntomas"):
+                    st.session_state.sintomas = sintomas
+                    st.session_state.conversation = iniciar_conversacion(datos_paciente, sintomas)
+
+                # Manejar la conversación con el asistente médico
+                if "conversation" in st.session_state:
+                    manejar_conversacion(openai_client, modelo)
+
+                # Mostrar el resumen final
+                if st.session_state.get("mostrar_resumen"):
+                    mostrar_resumen()
 
     else:
         st.error("No se pudo inicializar el cliente de OpenAI debido a problemas con la API Key.")
