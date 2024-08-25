@@ -1,9 +1,38 @@
-
 import streamlit as st
 from pdfminer.high_level import extract_text
 import re
 
-# Función para extraer líneas que contienen estudios y sus valores
+# Función para limpiar el texto extraído
+def clean_text(raw_text):
+    # Expresiones regulares para identificar y eliminar encabezados y espacios adicionales
+    patterns_to_remove = [
+        r"PACIENTE:.*",           # Encabezado de paciente
+        r"\d+ de \d+",            # Números de página
+        r"Fecha Nac:.*",          # Encabezado de fecha de nacimiento
+        r"Género: .* Edad: .*",   # Encabezado de género y edad
+        r"No. Orden .*",          # Encabezado de número de orden
+        r"Fecha Solicitud:.*",    # Encabezado de fecha de solicitud
+        r"Fecha Toma:.*",         # Encabezado de fecha de toma
+        r"Fecha Impresión:.*",    # Encabezado de fecha de impresión
+        r"Médico:.*",             # Encabezado de médico
+        r"Servicio:.*",           # Encabezado de servicio
+        r"Campus:.*",             # Encabezado de campus
+        r"Instrumento:.*",        # Encabezado de instrumento
+        r"Usuario:.*",            # Encabezado de usuario
+        r"Metodo:.*",             # Encabezado de método
+        r"NOTA:.*"                # Notas
+    ]
+    
+    cleaned_text = raw_text
+    for pattern in patterns_to_remove:
+        cleaned_text = re.sub(pattern, '', cleaned_text)
+
+    # Eliminar espacios adicionales y líneas en blanco
+    cleaned_text = re.sub(r'\s+', ' ', cleaned_text).strip()
+
+    return cleaned_text
+
+# Función para extraer los valores de los estudios médicos
 def extract_medical_values(text):
     # Expresión regular para encontrar líneas con valores numéricos
     pattern = re.compile(r"(.+?):?\s+([0-9.]+)\s*([a-zA-Z/\^%µ]*\s*/?[a-zA-Z0-9^%µ]*)")
@@ -30,14 +59,14 @@ if uploaded_files:
         # Contar caracteres antes de la limpieza
         original_char_count = len(text)
         
-        # Procesar el texto para extraer valores médicos
-        extracted_values = extract_medical_values(text)
-        
-        # Filtrar texto limpio basado en los valores extraídos
-        cleaned_text = '\n'.join([f"{val['estudio']}: {val['valor']} {val['unidad']}" for val in extracted_values])
+        # Limpiar el texto
+        cleaned_text = clean_text(text)
         
         # Contar caracteres después de la limpieza
         cleaned_char_count = len(cleaned_text)
+        
+        # Extraer valores médicos del texto limpio
+        extracted_values = extract_medical_values(cleaned_text)
         
         # Mostrar el texto original, el texto limpio y los valores extraídos, junto con las cantidades de caracteres
         st.markdown(f"### Texto Original del Archivo {i+1}")
