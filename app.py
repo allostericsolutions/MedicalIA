@@ -40,7 +40,8 @@ def clean_text(raw_text):
         r"Fecha Impresión:.*",                 # Fechas de impresión
         r"NSO",                                # Información de NSO
         r"\d{1,4}-\d{1,4}",                    # Rangos numéricos como 70-1190, 0.00-150.00, 150-500
-        r"Método.*"                            # Método
+        r"Método.*",                           # Método
+        r"Cédula Profesional.*"                # Cédula Profesional
     ]
     
     cleaned_text = raw_text
