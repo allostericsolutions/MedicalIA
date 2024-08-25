@@ -4,54 +4,48 @@ import openai
 def interrogatorio_gpt(datos_paciente, openai_client, modelo):
     st.header("Interrogatorio Médico con GPT")
 
-    # Prompt inicial desde el archivo gpt_config/prompt.txt
+    # ---->>>  Cargar el prompt y añadir datos del paciente  <<<<-----
     with open('gpt_config/prompt.txt', 'r') as file:
         prompt = file.read()
 
-    # Añadir los datos del paciente al prompt
-    prompt += f"\nDatos del paciente:\nEdad: {datos_paciente['edad']} años\nPeso: {datos_paciente['peso']} kg\nTalla: {datos_paciente['talla']} cm\nSíntomas: {datos_paciente['sintomas']}\n"
+    prompt += f"\nDatos del paciente:\nEdad: {datos_paciente['edad']} años\nPeso: {datos_paciente['peso']} kg\nTalla: {datos_paciente['talla']} cm\n" 
 
-    # Enviar el prompt a GPT y obtener la respuesta
-    try:
-        response = openai_client.chat.completions.create( # Actualización para OpenAI >= 1.0.0
-            model=modelo,  # Usa el modelo apropiado
-            messages=[
-                {"role": "system", "content": prompt},
-                {"role": "user", "content": "Haz un interrogatorio médico basado en los síntomas dados. Presenta las preguntas una a una."},
-            ]
-        )
+    # ---->>>  Obtener Síntomas del Usuario  <<<<-----
+    st.write("¿Cuáles son tus síntomas?")
+    sintomas = st.text_area("", key="sintomas_input")
+
+    # ---->>>  Botón para enviar síntomas  <<<<-----
+    if st.button("Enviar Síntomas") or (st.session_state.get("sintomas_enviados", False) and sintomas):
+        st.session_state.sintomas_enviados = True  # Marcar síntomas como enviados
+
+        # ---->>> Añadir síntomas al prompt  <<<<-----
+        prompt += f"Síntomas: {sintomas}\n"
+
+        # ---->>>  Interacción con GPT  <<<<-----
+        conversation = [{"role": "system", "content": prompt}]
         
-        interrogatorio = response.choices[0].message.content # Actualización para OpenAI >= 1.0.0
-        st.write("Preguntas generadas por GPT:")
-        st.write(interrogatorio)
+        while True: 
+            # Obtener la respuesta de GPT
+            response = openai_client.chat.completions.create(
+                model=modelo,
+                messages=conversation
+            )
 
-        # Separar las preguntas para presentarlas individualmente
-        preguntas = interrogatorio.split("\n")
+            message = response.choices[0].message.content
+            st.write("GPT: ", message)
 
-        # Mostrar cada pregunta en una ventana de diálogo separada
-        respuestas = []
-        for pregunta in preguntas:
-            if pregunta.strip():  # Ignorar líneas vacías
-                respuesta = st.text_area(pregunta)
-                respuestas.append(respuesta)
+            # Verificar si GPT ha terminado de preguntar
+            if "¿algo más?" in message.lower():
+                break
 
-        # Una vez que el usuario ha respondido todas las preguntas
-        # Enviar las respuestas a GPT para obtener la respuesta final
-        prompt_final = f"Las respuestas del paciente son: \n{'\n'.join(respuestas)}\n\nBasándose en esta información, ¿cuál es tu diagnóstico y recomendaciones para el paciente?"
+            # Obtener la respuesta del usuario 
+            user_input = st.text_area("", key=f"user_input_{len(conversation)}")
+            if st.button("Enviar", key=f"send_button_{len(conversation)}") or user_input:
+                conversation.append({"role": "user", "content": user_input})
 
-        response_final = openai_client.chat.completions.create( # Actualización para OpenAI >= 1.0.0
-            model=modelo,  # Utilizar el mismo modelo que antes
-            messages=[
-                {"role": "system", "content": prompt_final},
-            ]
-        )
+        # ---->>>  Mostrar resumen de síntomas (sin recomendaciones)  <<<<-----
+        st.write("Resumen de síntomas:")
+        st.write(sintomas)
 
-        respuesta_gpt = response_final.choices[0].message.content # Actualización para OpenAI >= 1.0.0
-        st.write("Respuesta de GPT:")
-        st.write(respuesta_gpt)
-
-        return respuestas
-
-    except Exception as e:
-        st.error(f"Ocurrió un error al obtener el interrogatorio de GPT: {e}")
-        return None
+    else:
+        st.session_state.sintomas_enviados = False  
